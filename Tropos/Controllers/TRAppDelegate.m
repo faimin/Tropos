@@ -1,7 +1,7 @@
 #import <HockeySDK/HockeySDK.h>
+#import "Tropos-Swift.h"
 #import "TRAppDelegate.h"
 #import "TRAnalyticsController.h"
-#import "TRSettingsController.h"
 #import "TRApplicationController.h"
 
 #ifndef DEBUG
@@ -12,6 +12,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    if ([self isCurrentlyTesting]) {
+        return YES;
+    }
+
 #ifndef DEBUG
     [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:TRHockeyIdentifier];
     [[BITHockeyManager sharedHockeyManager].crashManager setCrashManagerStatus:BITCrashManagerStatusAutoSend];
@@ -27,6 +31,7 @@
 
     [self.applicationController setMinimumBackgroundFetchIntervalForApplication:application];
 
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.rootViewController = self.applicationController.rootViewController;
     [self.window makeKeyAndVisible];
 
@@ -42,6 +47,11 @@
     } error:^(NSError *error) {
         completionHandler(UIBackgroundFetchResultFailed);
     }];
+}
+
+- (BOOL)isCurrentlyTesting
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"TRTesting"];
 }
 
 @end

@@ -1,4 +1,7 @@
 @import CoreLocation;
+@import Quick;
+@import Nimble;
+#import <OCMock/OCMock.h>
 #import "TRApplicationController.h"
 #import "TRWeatherController.h"
 #import "TRLocationController.h"
@@ -16,7 +19,7 @@
 
 @end
 
-SpecBegin(TRApplicationController)
+QuickSpecBegin(TRApplicationControllerSpec)
 
 TRLocationController* (^locationControllerWithAuthorizationStatusAuthorizedAlwaysEqualTo) (BOOL) = ^TRLocationController* (BOOL enabled){
     TRLocationController *locationController = OCMPartialMock([[TRLocationController alloc] init]);
@@ -60,4 +63,4 @@ describe(@"TRApplicationController", ^{
     });
 });
 
-SpecEnd
+QuickSpecEnd
