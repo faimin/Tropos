@@ -1,6 +1,6 @@
 machine:
   xcode:
-    version: "7.0"
+    version: "7.3"
 
 dependencies:
   override:
@@ -10,3 +10,4 @@ dependencies:
 test:
   override:
     - bin/test
+    - bin/archive

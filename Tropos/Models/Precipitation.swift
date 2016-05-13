@@ -1,12 +1,8 @@
 import Foundation
 
-@objc enum PrecipitationChance: Int {
-    case None, Slight, Good
-}
-
-@objc class Precipitation: NSObject {
-    let type: String
-    let probability: Float
+struct Precipitation {
+    var probability: Double
+    var type: String
 
     var chance: PrecipitationChance {
         switch probability {
@@ -14,10 +10,5 @@ import Foundation
         case _ where probability > 0: return .Slight
         default: return .None
         }
-    }
-
-    init(probability: Float, type: String) {
-        self.probability = probability
-        self.type = type
     }
 }
