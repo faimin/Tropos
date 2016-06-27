@@ -1,13 +1,14 @@
 @import CoreLocation;
 @import TroposCore;
 #import "RACSignal+TROperators.h"
+#import "TRAnalyticsController.h"
+#import "TRForecastController.h"
+#import "TRGeocodeController.h"
+#import "TRLocationController.h"
+#import "TRSettingsController+TRObservation.h"
 #import "TRWeatherController.h"
 #import "TRWeatherUpdate+Analytics.h"
-#import "TRLocationController.h"
-#import "TRForecastController.h"
-#import "TRSettingsController+TRObservation.h"
-#import "TRGeocodeController.h"
-#import "TRAnalyticsController.h"
+#import "UIApplication+TRReactiveBackgroundTask.h"
 
 @interface TRWeatherController ()
 
@@ -41,13 +42,15 @@
 
     @weakify(self)
     self.updateWeatherCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
-        @strongify(self)
-        return [[[[self.locationController requestAlwaysAuthorization] then:^RACSignal *{
-            return [self.locationController updateCurrentLocation];
-        }] flattenMap:^RACStream *(CLLocation *location) {
-            return [self.geocodeController reverseGeocodeLocation:location];
-        }] flattenMap:^RACStream *(CLPlacemark *placemark) {
-            return [self.forecastController fetchWeatherUpdateForPlacemark:placemark];
+        return [[UIApplication sharedApplication] tr_backgroundTaskWithSignal:^RACSignal *{
+            @strongify(self)
+            return [[[[self.locationController requestAlwaysAuthorization] then:^RACSignal *{
+                return [self.locationController updateCurrentLocation];
+            }] flattenMap:^RACStream *(CLLocation *location) {
+                return [self.geocodeController reverseGeocodeLocation:location];
+            }] flattenMap:^RACStream *(CLPlacemark *placemark) {
+                return [self.forecastController fetchWeatherUpdateForPlacemark:placemark];
+            }];
         }];
     }];
 

@@ -9,8 +9,10 @@
 @property (nonatomic) TRWeatherViewController *rootViewController;
 @property (nonatomic) TRCourierClient *courier;
 
-- (RACSignal *)performBackgroundFetch;
+- (RACSignal *)updateWeather;
 - (RACSignal *)localWeatherNotification;
 - (void)setMinimumBackgroundFetchIntervalForApplication:(UIApplication *)application;
+
+- (void)subscribeToNotificationsWithDeviceToken:(NSData *)deviceToken;
 
 @end
