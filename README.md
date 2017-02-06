@@ -1,5 +1,6 @@
-<img height="30" width="30" src="http://troposweather.com/assets/images/icon-491180cb.png" alt="Tropos Logo"> Tropos
-===============
+Tropos
+======
+
 [![Circle CI](https://circleci.com/gh/thoughtbot/Tropos.svg?style=svg)](https://circleci.com/gh/thoughtbot/Tropos)
 
 Weather and forecasts for humans.
@@ -10,7 +11,7 @@ but that doesn't answer the question of "What does it feel like outside?".
 Tropos answers this by relating the current conditions
 to conditions at the same time yesterday.
 
-[![Download on the App Store](http://troposweather.com/assets/images/app-store-badge-5eb1a238.svg)](https://itunes.apple.com/us/app/tropos-weather-forecasts-for/id955209376?mt=8)
+[Download on the App Store](https://itunes.apple.com/us/app/tropos-weather-forecasts-for/id955209376?mt=8)
 
 Setup
 -----
