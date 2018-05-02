@@ -7,12 +7,17 @@ private let TRPlacemarkKey = "TRPlacemark"
 private let TRDateKey = "TRDateAt"
 
 @objc(TRWeatherUpdate) public final class WeatherUpdate: NSObject, NSCoding {
-    public let date: NSDate
-    public let placemark: CLPlacemark
-    private let currentConditionsJSON: [String: AnyObject]
-    private let yesterdaysConditionsJSON: [String: AnyObject]
+    @objc public let date: Date
+    @objc public let placemark: CLPlacemark
+    private let currentConditionsJSON: [String: Any]
+    fileprivate let yesterdaysConditionsJSON: [String: Any]
 
-    public init?(placemark: CLPlacemark, currentConditionsJSON: [String: AnyObject], yesterdaysConditionsJSON: [String: AnyObject], date: NSDate) {
+    @objc public init?(
+        placemark: CLPlacemark,
+        currentConditionsJSON: [String: Any],
+        yesterdaysConditionsJSON: [String: Any],
+        date: Date
+    ) {
         self.date = date
         self.placemark = placemark
         self.currentConditionsJSON = currentConditionsJSON
@@ -20,27 +25,37 @@ private let TRDateKey = "TRDateAt"
         super.init()
     }
 
-    public convenience init?(placemark: CLPlacemark, currentConditionsJSON: [String: AnyObject], yesterdaysConditionsJSON: [String: AnyObject]) {
-        self.init(placemark: placemark, currentConditionsJSON: currentConditionsJSON, yesterdaysConditionsJSON: yesterdaysConditionsJSON, date: NSDate())
+    @objc public convenience init?(
+        placemark: CLPlacemark,
+        currentConditionsJSON: [String: Any],
+        yesterdaysConditionsJSON: [String: Any]
+    ) {
+        self.init(
+            placemark: placemark,
+            currentConditionsJSON: currentConditionsJSON,
+            yesterdaysConditionsJSON: yesterdaysConditionsJSON,
+            date: Date()
+        )
     }
 
-    private lazy var currentConditions: [String: AnyObject] = {
-        return self.currentConditionsJSON["currently"] as? [String: AnyObject] ?? [:]
+    fileprivate lazy var currentConditions: [String: Any] = {
+        return self.currentConditionsJSON["currently"] as? [String: Any] ?? [:]
     }()
 
-    private lazy var forecasts: [[String: AnyObject]] = {
-        return self.currentConditionsJSON["daily"]?["data"] as? [[String: AnyObject]] ?? []
+    fileprivate lazy var forecasts: [[String: Any]] = {
+        let daily = self.currentConditionsJSON["daily"] as? [String: Any]
+        return daily?["data"] as? [[String: Any]] ?? []
     }()
 
-    private var todaysForecast: [String: AnyObject] {
+    fileprivate var todaysForecast: [String: Any] {
         return forecasts.first ?? [:]
     }
 
     public required init?(coder: NSCoder) {
-        guard let currentConditions = coder.decodeObjectForKey(TRCurrentConditionsKey) as? [String: AnyObject],
-            let yesterdaysConditions = coder.decodeObjectForKey(TRYesterdaysConditionsKey) as? [String: AnyObject],
-            let placemark = coder.decodeObjectForKey(TRPlacemarkKey) as? CLPlacemark,
-            let date = coder.decodeObjectForKey(TRDateKey) as? NSDate
+        guard let currentConditions = coder.decodeObject(forKey: TRCurrentConditionsKey) as? [String: Any],
+            let yesterdaysConditions = coder.decodeObject(forKey: TRYesterdaysConditionsKey) as? [String: Any],
+            let placemark = coder.decodeObject(forKey: TRPlacemarkKey) as? CLPlacemark,
+            let date = coder.decodeObject(forKey: TRDateKey) as? Date
             else {
                 return nil
             }
@@ -51,76 +66,81 @@ private let TRDateKey = "TRDateAt"
         self.date = date
     }
 
-    public func encodeWithCoder(coder: NSCoder) {
-        coder.encodeObject(currentConditionsJSON, forKey: TRCurrentConditionsKey)
-        coder.encodeObject(yesterdaysConditionsJSON, forKey: TRYesterdaysConditionsKey)
-        coder.encodeObject(placemark, forKey: TRPlacemarkKey)
-        coder.encodeObject(date, forKey: TRDateKey)
+    public func encode(with coder: NSCoder) {
+        coder.encode(currentConditionsJSON, forKey: TRCurrentConditionsKey)
+        coder.encode(yesterdaysConditionsJSON, forKey: TRYesterdaysConditionsKey)
+        coder.encode(placemark, forKey: TRPlacemarkKey)
+        coder.encode(date, forKey: TRDateKey)
     }
 }
 
 public extension WeatherUpdate {
-    var city: String? {
+    @objc var city: String? {
         return placemark.locality
     }
 
-    var state: String? {
+    @objc var state: String? {
         return placemark.administrativeArea
     }
 
-    var conditionsDescription: String? {
+    @objc var conditionsDescription: String? {
         return currentConditions["icon"] as? String
     }
 
-    var precipitationType: String {
+    @objc var precipitationType: String {
         return (todaysForecast["precipType"] as? String) ?? "rain"
     }
 
-    var currentTemperature: Temperature {
-        let rawTemperature = self.currentConditions["temperature"] as? Int ?? 0
+    @objc var currentTemperature: Temperature {
+        let rawTemperature = (self.currentConditions["temperature"] as? NSNumber)?.intValue ?? 0
         return Temperature(fahrenheitValue: rawTemperature)
     }
 
-    var currentHigh: Temperature {
-        if case let rawHigh = todaysForecast["temperatureMax"] as? Int ?? 0 where rawHigh > currentTemperature.fahrenheitValue {
+    @objc var currentHigh: Temperature {
+        let rawHigh = (todaysForecast["temperatureMax"] as? NSNumber)?.intValue ?? 0
+
+        if rawHigh > currentTemperature.fahrenheitValue {
             return Temperature(fahrenheitValue: rawHigh)
         } else {
             return currentTemperature
         }
     }
 
-    var currentLow: Temperature {
-        if case let rawLow = todaysForecast["temperatureMin"] as? Int ?? 0 where rawLow < currentTemperature.fahrenheitValue {
+    @objc var currentLow: Temperature {
+        let rawLow = (todaysForecast["temperatureMin"] as? NSNumber)?.intValue ?? 0
+
+        if rawLow < currentTemperature.fahrenheitValue {
             return Temperature(fahrenheitValue: rawLow)
         } else {
             return currentTemperature
         }
     }
 
-    var yesterdaysTemperature: Temperature? {
-        let rawTemperature = yesterdaysConditionsJSON["currently"]?["temperature"]
-        guard let fahrenheitValue = rawTemperature as? Int else {
-            return .None
+    @objc var yesterdaysTemperature: Temperature? {
+        let currently = yesterdaysConditionsJSON["currently"] as? [String: Any]
+        let rawTemperature = currently?["temperature"] as? NSNumber
+        guard let fahrenheitValue = rawTemperature?.intValue else {
+            return .none
         }
         return Temperature(fahrenheitValue: fahrenheitValue)
     }
 
-    var precipitationPercentage: Double {
+    @objc var precipitationPercentage: Double {
         return Double(todaysForecast["precipProbability"] as? String ?? "") ?? 0
     }
 
-    var windSpeed: Double {
+    @objc var windSpeed: Double {
         return currentConditions["windSpeed"] as? Double ?? 0
     }
 
-    var windBearing: Double {
+    @objc var windBearing: Double {
         return currentConditions["windBearing"] as? Double ?? 0
     }
 
     var dailyForecasts: [DailyForecast] {
         return (1...3).flatMap {
             if forecasts.indices.contains($0) {
-                return DailyForecast(JSON: forecasts[$0])
+                return DailyForecast(json: forecasts[$0])
             } else {
                 return nil
             }
