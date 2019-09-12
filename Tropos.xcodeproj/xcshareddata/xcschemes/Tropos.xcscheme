@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0920"
+   LastUpgradeVersion = "0940"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -29,8 +29,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AA349281EBCAE02432E93D8E"
-               BuildableName = "UnitTests.xctest"
-               BlueprintName = "UnitTests"
+               BuildableName = "TroposTests.xctest"
+               BlueprintName = "TroposTests"
                ReferencedContainer = "container:Tropos.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,16 +40,15 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
       shouldUseLaunchSchemeArgsEnv = "NO">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4A552EF71CC7C8F8008C7298"
-               BuildableName = "TroposCoreSpecs.xctest"
-               BlueprintName = "TroposCoreSpecs-iOS"
+               BlueprintIdentifier = "AA349281EBCAE02432E93D8E"
+               BuildableName = "TroposTests.xctest"
+               BlueprintName = "TroposTests"
                ReferencedContainer = "container:Tropos.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -57,9 +56,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AA349281EBCAE02432E93D8E"
-               BuildableName = "UnitTests.xctest"
-               BlueprintName = "UnitTests"
+               BlueprintIdentifier = "4A552EF71CC7C8F8008C7298"
+               BuildableName = "TroposCoreSpecs.xctest"
+               BlueprintName = "TroposCoreTests"
                ReferencedContainer = "container:Tropos.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -83,10 +82,9 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"

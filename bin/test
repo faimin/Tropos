@@ -1,4 +1,3 @@
 #!/bin/sh
 
-set -eo pipefail
-bundle exec fastlane test
+exec fastlane test "$@"

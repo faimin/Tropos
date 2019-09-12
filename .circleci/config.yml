@@ -1,0 +1,58 @@
+version: 2.1
+executors:
+  xcode:
+    macos:
+      xcode: "10.1.0"
+
+jobs:
+  swiftformat:
+    executor: xcode
+    steps:
+      - checkout
+      - run: brew update && brew install swiftformat
+      - run: swiftformat --version
+      - run: swiftformat --lint .
+
+  build-and-test:
+    executor: xcode
+
+    environment:
+      CARTHAGE_LOG_PATH: log/carthage-build.log
+      GEM_INSTALL_LOG_PATH: log/gem-install.log
+
+    steps:
+      - checkout
+      - run: mkdir log
+      - run:
+          name: Save Xcode version
+          command: xcodebuild -version | tee .circle-xcode-version
+      - run:
+          name: Save Carthage cache version
+          command: echo "$CARTHAGE_CACHE_VERSION" | tee .circle-carthage-cache-version
+
+      - restore_cache:
+          keys:
+            - carthage-{{ checksum ".circle-carthage-cache-version" }}-{{ checksum ".circle-xcode-version" }}-{{ checksum "Cartfile.resolved" }}
+            - carthage-{{ checksum ".circle-carthage-cache-version" }}-{{ checksum ".circle-xcode-version" }}
+            - carthage-{{ checksum ".circle-carthage-cache-version" }}-
+
+      - run: bin/setup
+
+      - save_cache:
+          key: carthage-{{ checksum ".circle-carthage-cache-version" }}-{{ checksum ".circle-xcode-version" }}-{{ checksum "Cartfile.resolved" }}
+          paths:
+            - "~/Library/Caches/org.carthage.CarthageKit"
+            - "Carthage"
+
+      - run: bin/test
+      - run: bin/archive
+
+      - store_artifacts:
+          path: log
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-and-test
+      - swiftformat
